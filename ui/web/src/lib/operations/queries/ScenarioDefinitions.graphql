@@ -1,0 +1,10 @@
+query ScenarioDefinitions {
+    scenarioDefinitions {
+        definitions {
+            id,
+            title,
+            applicationFailure,
+            exception,
+        }
+    }
+}

@@ -1,0 +1,28 @@
+{
+  "scenarios": [
+    {
+      "id": "activity_failure_api_down",
+      "title": "API Down",
+      "exception": "Status 503. Service is down."
+    },
+    {
+      "id": "workflow_transient_exception",
+      "title": "Workflow Transient Exception",
+      "exception": "Runtime exception due to bug."
+    },
+    {
+      "id": "workflow_failure",
+      "title": "Workflow Application Failure",
+      "applicationFailure": "Application Failure. Cannot recover."
+    },
+    {
+      "id": "worker_crashed",
+      "title": "Worker Crashed"
+    },
+    {
+      "id": "signal_failure",
+      "title": "Signal Failed",
+      "applicationFailure": "Signal Failure. Signal caused Application Failure."
+    }
+  ]
+}

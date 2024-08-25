@@ -1,0 +1,33 @@
+.DS_Store
+node_modules
+/.svelte-kit
+/package
+/cypress/screenshots
+/cypress/videos
+/build-local
+/build-cloud
+/coverage
+*.log
+*.swp
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+# svelte
+/build
+.svelte-kit
+
+generated

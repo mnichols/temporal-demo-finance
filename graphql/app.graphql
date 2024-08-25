@@ -1,0 +1,143 @@
+type TemporalConnection {
+    namespace: String!
+    taskQueue: String
+}
+type AppInfo {
+    temporal: TemporalConnection!
+    name: String!
+}
+
+type CurrentPaymentState {
+    accountId: String!
+    value: String!
+    authorizationToken: String
+    authorization: PaymentAuthorizationResponse
+    capture: CaptureResponse
+    applicationMutation2: MutateApplicationResponse
+    compensation: CompensateResponse
+    beginning: BeginResponse
+    finalizable: String
+    finalization: FinalizeResponse
+    paymentId: String!
+    paymentCompletionId: String!
+}
+
+type Scenarios {
+    scenarios: [Scenario!]!
+}
+type Scenario {
+    id: String!
+    title: String!
+    active: Boolean!
+    applicationFailure: String
+    exception: String
+    value: String
+}
+type ScenarioDefinitions {
+    definitions: [ScenarioDefinition!]!
+}
+type ScenarioDefinition {
+    id: String!
+    title: String!
+    applicationFailure: String
+    exception: String
+}
+input AuthorizePaymentRequest {
+    paymentId: String!
+    value: String!
+    accountId: String!
+}
+
+input ValidateRequest {
+    value: String!
+}
+type ValidateResponse {
+    value: String!
+}
+type AuthorizePaymentResponse {
+    paymentId: String!
+    token: String!
+    value: String!
+    approved: Boolean!
+}
+type PaymentAuthorizationResponse {
+    approved: Boolean!
+    token: String!
+    value: String!
+}
+
+input MutateApplicationRequest {
+    value: String!
+}
+input CaptureRequest {
+    value: String!
+}
+type CaptureResponse {
+    value: String!
+}
+type MutateApplicationResponse {
+    value: String!
+}
+
+input CompensateRequest {
+    value: String!
+}
+type CompensateResponse {
+    value: String!
+}
+
+input ReplyRequest {
+    value: String!
+    taskQueue: String!
+    activityName: String!
+}
+#type PaymentAuthorizationResponse {
+#    workflowId: String!
+#    id: String!
+#    value: String!
+#}
+
+input BeginRequest {
+    value: String!
+}
+type BeginResponse {
+    value: String!
+}
+
+input CaptureRequest {
+    workflowId: String!
+    value: String!
+}
+input FinalizeRequest {
+    workflowId: String!
+    value: String!
+}
+type FinalizeResponse {
+    workflowId: String!
+    value: String!
+}
+
+input QueryRequest {
+    workflowId: String!
+    value: String
+}
+
+input WorkflowStateRequest {
+    workflowId: String!
+}
+type QueryResponse {
+    value: String!
+}
+
+type Mutation {
+    authorizePayment(input: AuthorizePaymentRequest!): AuthorizePaymentResponse!
+    capture(input: CaptureRequest!): FinalizeResponse!
+}
+type Query {
+    appInfo: AppInfo!
+    queryWorkflow(input: QueryRequest): CurrentPaymentState!
+    scenarioDefinitions: ScenarioDefinitions!
+}
+type Subscription {
+    workflowState(input: WorkflowStateRequest!): CurrentPaymentState!
+}

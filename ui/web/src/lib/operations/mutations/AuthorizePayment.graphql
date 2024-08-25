@@ -1,0 +1,7 @@
+mutation AuthorizePayment($input: AuthorizePaymentRequest!) {
+    authorizePayment(input: $input) {
+        paymentId,
+        value,
+        token,
+    }
+}

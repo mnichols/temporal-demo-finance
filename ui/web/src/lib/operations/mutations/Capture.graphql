@@ -1,0 +1,6 @@
+mutation Capture($input: CaptureRequest!) {
+    capture(input: $input) {
+        workflowId,
+        value,
+    }
+}

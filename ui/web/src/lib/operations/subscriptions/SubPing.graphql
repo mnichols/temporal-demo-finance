@@ -1,0 +1,3 @@
+subscription SubPing($input: SubPingInput) {
+    subPing(input: $input) { value }
+}

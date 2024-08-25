@@ -1,0 +1,12 @@
+query QueryWorkflow($input: QueryRequest) {
+    queryWorkflow(input: $input) {
+        accountId,
+        paymentId,
+        value,
+        authorizationToken,
+        authorization { token, value, approved }
+        capture { value },
+        finalization { value },
+        paymentCompletionId,
+    }
+}

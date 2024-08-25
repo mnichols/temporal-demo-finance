@@ -1,0 +1,50 @@
+server:
+  port: 3030
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: temporal-seed
+  # temporal specific configs
+  temporal:
+    connection:
+    # namespace: my-cloud-namespace.accountid
+      namespace: default
+      # target: my-cloud-namespace.accountid.tmprl.cloud:7233
+      target: local     # specifying local is equivalent to WorkflowServiceStubs.newLocalServiceStubs() so all other connection options are ignored.
+    # enable-https: true
+      mtls:
+        key-file: /path/to/cert.key
+        cert-chain-file: /path/to/cert.pem
+      # key-password: <password-for-the-key>
+      # insecure-trust-manager: true # or add cert.pem to java default truststore
+      workers:
+        - task-queue: your-task-queue-name
+        # name: your-worker-name # unique name of the Worker. If not specified, Task Queue is used as the Worker name.
+          workflow-classes:
+            - your.package.YouWorkflowImpl
+          activity-beans:
+            - activity-bean-name1
+        # capacity:
+          # max-concurrent-workflow-task-executors: 200
+          # max-concurrent-activity-executors: 200
+          # max-concurrent-local-activity-executors: 200
+          # max-concurrent-workflow-task-pollers: 5
+          # max-concurrent-activity-task-pollers: 5
+        # rate-limits:
+        #   max-worker-activities-per-second: 5.0
+        #   max-task-queue-activities-per-second: 5.0
+        # build-id:
+          # worker-build-id: "1.0.0"
+  # workflow-cache:
+    # max-instances: 600
+    # max-threads: 600
+  # workersAutoDiscovery:
+  #   packages: io.temporal.samples.springboot
+
+# actuator (sdk metrics)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
