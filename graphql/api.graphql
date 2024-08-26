@@ -1,0 +1,12 @@
+type Mutation {
+    authorizePayment(input: AuthorizePaymentRequest!): AuthorizePaymentResponse!
+    capture(input: CaptureRequest!): FinalizeResponse!
+}
+type Query {
+    appInfo: AppInfo!
+    queryWorkflow(input: QueryRequest): CurrentPaymentState!
+    scenarioDefinitions: ScenarioDefinitions!
+}
+type Subscription {
+    workflowState(input: WorkflowStateRequest!): CurrentPaymentState!
+}

@@ -32,6 +32,7 @@
     "cors": "^2.8.5",
     "dotenv-extended": "^2.9.0",
     "express": "^4.19.2",
+    "express-fileupload": "^1.5.1",
     "graphql": "^16.8.1",
     "graphql-http": "^1.22.0",
     "graphql-sse": "^2.5.3",

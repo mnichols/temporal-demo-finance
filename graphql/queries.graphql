@@ -1,0 +1,30 @@
+type AppInfo {
+    temporal: TemporalConnection!
+    name: String!
+}
+
+
+type TemporalConnection {
+    namespace: String!
+    taskQueue: String
+}
+
+input WorkflowStateRequest {
+    workflowId: String!
+}
+
+
+type CurrentPaymentState {
+    accountId: String!
+    value: String!
+    authorizationToken: String
+    authorization: PaymentAuthorizationResponse
+    capture: CaptureResponse
+    applicationMutation2: MutateApplicationResponse
+    compensation: CompensateResponse
+    beginning: BeginResponse
+    finalizable: String
+    finalization: FinalizeResponse
+    paymentId: String!
+    paymentCompletionId: String!
+}

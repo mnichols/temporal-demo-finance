@@ -1,26 +1,5 @@
-type TemporalConnection {
-    namespace: String!
-    taskQueue: String
-}
-type AppInfo {
-    temporal: TemporalConnection!
-    name: String!
-}
 
-type CurrentPaymentState {
-    accountId: String!
-    value: String!
-    authorizationToken: String
-    authorization: PaymentAuthorizationResponse
-    capture: CaptureResponse
-    applicationMutation2: MutateApplicationResponse
-    compensation: CompensateResponse
-    beginning: BeginResponse
-    finalizable: String
-    finalization: FinalizeResponse
-    paymentId: String!
-    paymentCompletionId: String!
-}
+
 
 type Scenarios {
     scenarios: [Scenario!]!
@@ -42,24 +21,9 @@ type ScenarioDefinition {
     applicationFailure: String
     exception: String
 }
-input AuthorizePaymentRequest {
-    paymentId: String!
-    value: String!
-    accountId: String!
-}
 
-input ValidateRequest {
-    value: String!
-}
-type ValidateResponse {
-    value: String!
-}
-type AuthorizePaymentResponse {
-    paymentId: String!
-    token: String!
-    value: String!
-    approved: Boolean!
-}
+
+
 type PaymentAuthorizationResponse {
     approved: Boolean!
     token: String!
@@ -129,15 +93,3 @@ type QueryResponse {
     value: String!
 }
 
-type Mutation {
-    authorizePayment(input: AuthorizePaymentRequest!): AuthorizePaymentResponse!
-    capture(input: CaptureRequest!): FinalizeResponse!
-}
-type Query {
-    appInfo: AppInfo!
-    queryWorkflow(input: QueryRequest): CurrentPaymentState!
-    scenarioDefinitions: ScenarioDefinitions!
-}
-type Subscription {
-    workflowState(input: WorkflowStateRequest!): CurrentPaymentState!
-}

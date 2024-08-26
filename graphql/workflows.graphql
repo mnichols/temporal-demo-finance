@@ -1,0 +1,11 @@
+input AuthorizePaymentRequest {
+    paymentId: String!
+    value: String!
+    accountId: String!
+}
+type AuthorizePaymentResponse {
+    paymentId: String!
+    token: String!
+    value: String!
+    approved: Boolean!
+}
