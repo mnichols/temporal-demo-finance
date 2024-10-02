@@ -10,11 +10,21 @@
             eventSource.addEventListener('error', (err) => console.log('SSE Error', err));
             eventSource.addEventListener('message', (e) => {
                 let data = JSON.parse(e.data)
+                if(!data.isValid) {
+                    window.location = '{{ url_for_workflow(id)}}';
+                    return
+                }
+                document.querySelector('.total-amount-cents').innerHTML = `$${data.totalAmountCents}`
+                if(data.transaction && data.transaction.transactionId) {
+                    let trxEl = document.querySelector('.transaction-id')
+                    trxEl.innerHTML = `Trx: ${data.transaction.transactionId}`
+                }
+
                 console.log('data', data)
-                document.querySelector('#progress').setAttribute('value', data.progressPercentage)
-                let radial = document.querySelector('#radial-progress')
-                radial.setAttribute('style','--value:' + data.progressPercentage+';')
-                radial.innerHTML = `${data.progressPercentage}%`
+                // document.querySelector('#progress').setAttribute('value', data.progressPercentage)
+                // let radial = document.querySelector('#radial-progress')
+                // radial.setAttribute('style','--value:' + data.progressPercentage+';')
+                // radial.innerHTML = `${data.progressPercentage}%`
                 console.log('SSE Data', e.data)
             });
         }
@@ -26,18 +36,43 @@
 
 {% block main %}
 
-<div class="flex flex-col sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
+<div class="flex flex-col h-full w-full border border-gray-200 p-4 rounded-md justify-stretch">
     <header class='text-2xl flex-auto w-full flex items-center max-h-4'>
-        <h3 class='text-center w-full'>
-            <a href='{{url_for_workflow(id)}}' class='link link-primary' target='_blank'>Transfer {{id}}</a>
-        </h3>
+        <h2 class='text-center w-full'>
+            <a href='{{url_for_workflow(id)}}' class='link link-primary' target='_blank'>Payment {{id}}</a>
+        </h2>
     </header>
-    <div class='flex-auto'>
-        <div id='radial-progress' class="radial-progress" style="--value:0;" role="progressbar">0%</div>
-        <progress id='progress' class="progress progress-primary w-56" value="0" max="100"></progress>
-    </div>
-</div>
+    <div class='text-2xl total-amount-cents'></div>
+    <div class='text-2xl transaction-id'></div>
 
+    <!--    <div class='flex-auto'>-->
+<!--        <div id='radial-progress' class="radial-progress" style="&#45;&#45;value:0;" role="progressbar">0%</div>-->
+<!--        <progress id='progress' class="progress progress-primary w-56" value="0" max="100"></progress>-->
+<!--    </div>-->
+    <form action='/tips/{{id}}' method='post' class="flex flex-col items-stretch sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
+        <input type='hidden' name='_METHOD' value='PUT'/>
+        <header class='text-2xl flex-auto w-full flex items-center'>
+            <h3 class='text-center w-full'>Leave A Tip</h3>
+        </header>
+        <div class='flex-auto form-control'>
+            <label for="tip-amount" class="label w-full max-w-xs">
+                <span class='label-text'>Tip Amount</span>
+            </label>
+            <div class='input input-bordered flex items-center gap-2'>
+                <span>$</span>
+                <input
+                        id="tip-amount"
+                        type="number"
+                        name='tip_amount'
+                        class="w-full max-x-xs"
+                        required/>
+            </div>
+        </div>
+        <button class='btn btn-primary'>Submit</button>
+    </form>
+
+
+</div>
 
 {% endblock main %}
 
@@ -45,14 +80,3 @@
     {% include '_nav.html' %}
 {% endblock leftcol %}
 
-{% block rightcol %}
-<div>
-    <p>Here is a sexy component</p>
-</div>
-{% endblock rightcol %}
-
-{% block footer %}
-<footer>
-    <div>Here is a footer</div>
-</footer>
-{% endblock footer %}

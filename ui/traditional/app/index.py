@@ -11,7 +11,7 @@ from temporalio.service import RPCError
 
 from app.clients import get_clients
 from app.config import get_config
-from app.messages import MakePaymentRequest, PaymentDescriptor
+from app.messages import MakePaymentRequest, PaymentDescriptor, LeaveTipRequest
 from app.models import DEFAULT_WORKFLOW_TYPE, PAYMENT_TYPES
 from app.views import get_make_payment_form, ServerSentEvent
 
@@ -96,8 +96,7 @@ async def index():
 async def transfers():
     temporal_client = cast(Client, app.clients.temporal)
     data = await request.form
-    wid = data.get('remote_id','transfer-{id}'.format(id=secrets.choice(string.ascii_lowercase + string.digits)))
-    wf_type = data.get('scenario',  DEFAULT_WORKFLOW_TYPE)
+    wid = data.get('remote_id','payment-{id}'.format(id=secrets.choice(string.ascii_lowercase + string.digits)))
     descriptors = []
     for t in PAYMENT_TYPES:
         tid = t.get('id')
@@ -119,12 +118,19 @@ async def transfers():
                                                   arg=params,
                                                   )
 
-    return redirect(location='/payments/{id}?type={wf_type}'.format(id=handle.id, wf_type=wf_type))
+    return redirect(location='/payments/{id}'.format(id=handle.id))
 
 @app.get('/payments/<id>')
 async def transfer(id):
     type = request.args.get('type')
     return await render_template(template_name_or_list='payment.html', id=id, type=type)
+
+@app.post('/tips/<id>')
+async def tip(id):
+    data = await request.form
+    handle = app.clients.temporal.get_workflow_handle(id)
+    tip = await handle.execute_update(update='leaveTip', arg=LeaveTipRequest(int(data.get('tip_amount', 0))))
+    return redirect(location='/payments/{id}'.format(id=handle.id))
 
 @app.get("/sub/<workflow_id>")
 async def sub(workflow_id):

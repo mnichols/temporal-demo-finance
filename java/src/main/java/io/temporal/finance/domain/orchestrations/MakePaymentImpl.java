@@ -16,7 +16,6 @@ import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,6 +52,7 @@ public class MakePaymentImpl implements MakePayment {
   public void execute(MakePaymentRequest params) {
     // first lets initialize the state of our payment (entity pattern)
     this.state = new PaymentState(params);
+    this.calculateTotalAmountCents(this.state);
     // a recursive call to the payment can set up some nice ways to handle
     // custom logic for outages and so on
     if (state.getRequestAttempts() > 5) {
@@ -61,6 +61,7 @@ public class MakePaymentImpl implements MakePayment {
           Errors.INVALID_PAYMENT.name());
     }
 
+    // 1. VALIDATE: Check out the concurrency story!
     if (params.requestAttempts() == 0) {
       // right now, we are just failing if any validation errors or returns !ok
       // however we could just as easily alter the charge amount here and await for an alternative
@@ -71,12 +72,7 @@ public class MakePaymentImpl implements MakePayment {
       }
     }
 
-    // this is safe to do without breaking determinism!
-    this.state.setTotalAmountCents(
-        Arrays.stream(params.descriptors())
-            .map(PaymentDescriptor::amountCents)
-            .reduce(0, Integer::sum));
-    // SAGA!
+    // 2. Transact within a SAGA!
     try {
       // use our payment gateway to create a transaction then mutate our own application with the
       // result
@@ -86,6 +82,7 @@ public class MakePaymentImpl implements MakePayment {
               new CreateTransactionRequest(
                   params.merchantId(), params.remoteId(), this.state.getTotalAmountCents()));
       this.state.setTransaction(trx);
+      this.state.setTippable(this.state.getRemoteId().toLowerCase().contains("tippable"));
       this.merchants.recordTransaction(
           new RecordTransactionRequest(
               this.state.getMerchantId(),
@@ -99,7 +96,7 @@ public class MakePaymentImpl implements MakePayment {
           this.handleUnreachablePaymentGateway(af, state);
           return;
         }
-        // compensate in the event of this failure
+        // 2a. COMPENSATE in the event of this failure but a transaction exists we need to back out
         if (this.state.getTransaction() != null) {
           payments.reverseTransaction(
               new ReverseTransactionRequest(
@@ -108,21 +105,42 @@ public class MakePaymentImpl implements MakePayment {
         throw e;
       }
     }
+
+    // 3. HUMAN IN THE LOOP : add a tip!
+    if (this.state.isTippable()) {
+      Workflow.await(Duration.ofSeconds(120), () -> this.state.getTipAmountCents() > 0);
+      var tip =
+          this.payments.tipTransaction(
+              new TipTransactionRequest(
+                  this.state.getTransaction().transactionId(), this.state.getTipAmountCents()));
+      this.state.setTipAmountCents(tip.tipAmountCents());
+      this.calculateTotalAmountCents(this.state);
+    }
+  }
+
+  private void calculateTotalAmountCents(PaymentState state) {
+    // this is safe to do without breaking determinism!
+    this.state.setTotalAmountCents(
+        state.getDescriptors().stream().map(PaymentDescriptor::amountCents).reduce(0, Integer::sum)
+            + state.getTipAmountCents());
   }
 
   private void handleUnreachablePaymentGateway(
       ApplicationFailure originalError, PaymentState state) {
 
+    // we can recursively call our workflow with new arguments to
+    // keep track of its progress
     var can = Workflow.newContinueAsNewStub(MakePayment.class);
     can.execute(
         new MakePaymentRequest(
             state.getRemoteId(),
             state.getMerchantId(),
             state.getDescriptors().toArray(new PaymentDescriptor[0]),
-            state.tipAmountCents(),
+            state.getTipAmountCents(),
             state.getRequestAttempts() + 1));
   }
 
+  // CONCURRENCY call validators on each payment method
   private List<RuntimeException> validatePaymentMethods(PaymentState state) {
     var validations = new ArrayList<Promise<ValidatePaymentMethodResponse>>();
     var errors = new ArrayList<RuntimeException>();
@@ -148,5 +166,20 @@ public class MakePaymentImpl implements MakePayment {
   @Override
   public PaymentState getState() {
     return this.state;
+  }
+
+  @Override
+  public LeaveTipResponse leaveTip(LeaveTipRequest cmd) {
+    this.state.setTipAmountCents(cmd.tipAmountCents());
+    return new LeaveTipResponse();
+  }
+
+  @Override
+  public void validateLeaveTip(LeaveTipRequest cmd) {
+    if (this.state.isTippable()) {
+      return;
+    }
+    throw ApplicationFailure.newFailure(
+        "Tip is not able to be applied to this payment.", Errors.NOT_TIPPABLE.name());
   }
 }

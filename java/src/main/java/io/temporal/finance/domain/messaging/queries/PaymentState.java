@@ -8,6 +8,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PaymentState {
+  public int getTipAmountCents() {
+    return tipAmountCents;
+  }
+
+  public void setTipAmountCents(int tipAmountCents) {
+    this.tipAmountCents = tipAmountCents;
+  }
+
+  private boolean isTippable;
+  private int tipAmountCents;
   MakePaymentRequest request;
   List<PaymentDescriptor> descriptors = new ArrayList<>();
   boolean isValid = false;
@@ -37,6 +47,7 @@ public class PaymentState {
   public PaymentState(MakePaymentRequest request) {
     this.request = request;
     this.descriptors = Arrays.asList(request.descriptors());
+    this.tipAmountCents = request.tipAmountCents();
     this.isValid = true;
   }
 
@@ -64,11 +75,15 @@ public class PaymentState {
     return request.remoteId();
   }
 
-  public int tipAmountCents() {
-    return request.tipAmountCents();
-  }
-
   public int getRequestAttempts() {
     return request.requestAttempts();
+  }
+
+  public boolean isTippable() {
+    return isTippable;
+  }
+
+  public void setTippable(boolean tippable) {
+    isTippable = tippable;
   }
 }

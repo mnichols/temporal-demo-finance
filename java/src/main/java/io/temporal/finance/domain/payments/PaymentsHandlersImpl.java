@@ -46,4 +46,10 @@ public class PaymentsHandlersImpl implements PaymentsHandlers {
     logger.info("Reversed transaction {}", cmd.transactionId());
     return new ReverseTransactionResponse();
   }
+
+  @Override
+  public TipTransactionResponse tipTransaction(TipTransactionRequest cmd) {
+    logger.info("Left a tip for {}", cmd.transactionId());
+    return new TipTransactionResponse(cmd.transactionId(), cmd.tipAmountCents());
+  }
 }

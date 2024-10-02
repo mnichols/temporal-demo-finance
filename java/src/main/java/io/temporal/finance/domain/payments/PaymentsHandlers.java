@@ -14,4 +14,7 @@ public interface PaymentsHandlers {
 
   @ActivityMethod
   ReverseTransactionResponse reverseTransaction(ReverseTransactionRequest cmd);
+
+  @ActivityMethod
+  TipTransactionResponse tipTransaction(TipTransactionRequest cmd);
 }
