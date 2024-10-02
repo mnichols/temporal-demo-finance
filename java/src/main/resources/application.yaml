@@ -16,7 +16,7 @@ spring:
           - io.temporal.finance.domain.orchestrations.MakePaymentImpl
         activity-beans:
           - payments-handlers
-#          - integrations-handlers
+          - merchants-handlers
     namespace: default # https://docs.temporal.io/cloud/#temporal-cloud-namespace-id
     connection:
       target: 127.0.0.1:7233
