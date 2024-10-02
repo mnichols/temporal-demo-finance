@@ -14,10 +14,30 @@
                     window.location = '{{ url_for_workflow(id)}}';
                     return
                 }
-                document.querySelector('.total-amount-cents').innerHTML = `$${data.totalAmountCents}`
+                let totalAmountCents = document.querySelector('.total-amount-cents')
+                let transactionStatus = document.querySelector('.transaction-status')
+                let transactionId = document.querySelector('.transaction-id')
+                let tipButton = document.querySelector('.tip-form button')
+                let failure = document.querySelector('.failure')
+                let alertError = document.querySelector('.alert-error')
+
+                totalAmountCents.innerHTML = `$${data.totalAmountCents}`
+                if(data.isTransactionCompleted) {
+                    transactionStatus.innerHTML = `completed`
+                    transactionStatus.classList.add('badge-accent')
+                } else if (data.failure) {
+                    transactionStatus.innerHTML = 'failed'
+                    failure.innerHTML = data.failure
+                    alertError.classList.remove('hidden')
+                    transactionStatus.classList.add('badge-error')
+                }
                 if(data.transaction && data.transaction.transactionId) {
-                    let trxEl = document.querySelector('.transaction-id')
-                    trxEl.innerHTML = `Trx: ${data.transaction.transactionId}`
+                    transactionId.innerHTML = `Transaction ID: ${data.transaction.transactionId}`
+                }
+                if(data.isTippable){
+                    tipButton.removeAttribute('disabled')
+                } else {
+                    tipButton.setAttribute('disabled','disabled')
                 }
 
                 console.log('data', data)
@@ -36,25 +56,30 @@
 
 {% block main %}
 
-<div class="flex flex-col h-full w-full border border-gray-200 p-4 rounded-md justify-stretch">
-    <header class='text-2xl flex-auto w-full flex items-center max-h-4'>
+<div class="flex flex-col  border border-gray-200 p-4 rounded-md items-center">
+    <header class='text-2xl flex-auto w-full flex items-center max-h-4 p-4'>
         <h2 class='text-center w-full'>
-            <a href='{{url_for_workflow(id)}}' class='link link-primary' target='_blank'>Payment {{id}}</a>
+            <span>Payment:</span>
+            <a href='{{url_for_workflow(id)}}' class='link link-primary' target='_blank'>{{id}}</a>
         </h2>
     </header>
-    <div class='text-2xl total-amount-cents'></div>
+    <div class='text-2xl m-4 total-amount-cents'></div>
+    <div class="transaction-status m-4 badge badge-primary">pending</div>
+    <div role="alert" class="alert alert-error hidden">
+        <span class='failure'></span>
+    </div>
     <div class='text-2xl transaction-id'></div>
 
     <!--    <div class='flex-auto'>-->
 <!--        <div id='radial-progress' class="radial-progress" style="&#45;&#45;value:0;" role="progressbar">0%</div>-->
 <!--        <progress id='progress' class="progress progress-primary w-56" value="0" max="100"></progress>-->
 <!--    </div>-->
-    <form action='/tips/{{id}}' method='post' class="flex flex-col items-stretch sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
+    <form action='/tips/{{id}}' method='post'  class='tip-form flex-auto border border-gray-200 p-4 rounded-md">
         <input type='hidden' name='_METHOD' value='PUT'/>
         <header class='text-2xl flex-auto w-full flex items-center'>
             <h3 class='text-center w-full'>Leave A Tip</h3>
         </header>
-        <div class='flex-auto form-control'>
+        <div class='form-control'>
             <label for="tip-amount" class="label w-full max-w-xs">
                 <span class='label-text'>Tip Amount</span>
             </label>
@@ -68,7 +93,7 @@
                         required/>
             </div>
         </div>
-        <button class='btn btn-primary'>Submit</button>
+        <button disabled class='btn btn-primary'>Submit</button>
     </form>
 
 

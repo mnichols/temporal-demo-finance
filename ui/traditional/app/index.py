@@ -96,7 +96,9 @@ async def index():
 async def transfers():
     temporal_client = cast(Client, app.clients.temporal)
     data = await request.form
-    wid = data.get('remote_id','payment-{id}'.format(id=secrets.choice(string.ascii_lowercase + string.digits)))
+    scenario = data.get('scenario', '')
+    remote_id = f'{data.get('remote_id')}-{scenario}'
+    wid = remote_id
     descriptors = []
     for t in PAYMENT_TYPES:
         tid = t.get('id')
@@ -108,7 +110,7 @@ async def transfers():
         descriptors=descriptors,
         remoteId=wid,
         merchantId=data.get('merchant_id'),
-        tipAmountCents=data.get('tip_amount'),
+        tipAmountCents=data.get('tip_amount',0),
     )
     print('sending {params}'.format(params=params))
 
@@ -140,10 +142,10 @@ async def sub(workflow_id):
     async def async_generator():
         while True:
 
-            print('querying {workflow_id}'.format(workflow_id=workflow_id))
+            # print('querying {workflow_id}'.format(workflow_id=workflow_id))
             handle = app.clients.temporal.get_workflow_handle(workflow_id)
             state = await handle.query('getState')
-            print(state)
+            # print(state)
             event = ServerSentEvent(data=json.dumps(state), retry=None, id=None,event=None)
             yield event.encode()
             await sleep(2)

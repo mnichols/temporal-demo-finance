@@ -1,15 +1,15 @@
 DEFAULT_WORKFLOW_TYPE = 'AccountTransferWorkflow'
 SCENARIOS = [
-    {'id': DEFAULT_WORKFLOW_TYPE, 'label': 'Normal "Happy Path" Execution'},
-    {'id': "AccountTransferWorkflowHumanInLoop", 'label': "Require Human-In-Loop Approval"},
-    {'id': "AccountTransferWorkflowAPIDowntime", 'label': "API Downtime (recover on 5th attempt)"},
-    {'id': "AccountTransferWorkflowRecoverableFailure", 'label': "Bug in Workflow (recoverable failure)",},
-    {'id': "AccountTransferWorkflowInvalidAccount", 'label': "Invalid Account (unrecoverable failure)",},
+    {'id': 'happy', 'label': 'Normal "Happy Path" Execution'},
+    {'id': "fail-payment-type", 'label': "Fail Validation"},
+    {'id': "fail-payment-gateway", 'label': "Payment Gateway Outage (API)"},
+    {'id': "fail-record-transaction", 'label': "DB Failure post-mutation (Saga)",},
+    {'id': "tippable", 'label': "Leave A Tip (Human In The Loop)",},
 ]
 
 PAYMENT_TYPES = [
     {'id': 'GIFT_CARD', 'label': 'Gift Card'},
-    {'id': 'ACH', 'label': 'ACH'},
+    # {'id': 'ACH', 'label': 'ACH'},
     {'id': 'CARD_PRESENT', 'label': 'Card Present'}
 ]
 

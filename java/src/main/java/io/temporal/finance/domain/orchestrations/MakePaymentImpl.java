@@ -55,7 +55,8 @@ public class MakePaymentImpl implements MakePayment {
     this.calculateTotalAmountCents(this.state);
     // a recursive call to the payment can set up some nice ways to handle
     // custom logic for outages and so on
-    if (state.getRequestAttempts() > 5) {
+    if (state.getRequestAttempts() > 3) {
+      this.state.setFailure("UNABLE TO COMPLETE");
       throw ApplicationFailure.newFailure(
           "Exceeded amount of attempts for this payment. \nI COULD send a notification or call some activity fer now we will just fail.",
           Errors.INVALID_PAYMENT.name());
@@ -68,6 +69,7 @@ public class MakePaymentImpl implements MakePayment {
       // payment for the balance
       var validationErrors = this.validatePaymentMethods(this.state);
       if (!validationErrors.isEmpty() || !state.isValid()) {
+        this.state.setFailure(Errors.INVALID_PAYMENT.name());
         throw ApplicationFailure.newFailure("Validation failed.", Errors.INVALID_PAYMENT.name());
       }
     }
@@ -98,6 +100,7 @@ public class MakePaymentImpl implements MakePayment {
         }
         // 2a. COMPENSATE in the event of this failure but a transaction exists we need to back out
         if (this.state.getTransaction() != null) {
+          this.state.setFailure(af.getMessage());
           payments.reverseTransaction(
               new ReverseTransactionRequest(
                   this.state.getTransaction().transactionId(), af.getMessage()));
@@ -115,7 +118,10 @@ public class MakePaymentImpl implements MakePayment {
                   this.state.getTransaction().transactionId(), this.state.getTipAmountCents()));
       this.state.setTipAmountCents(tip.tipAmountCents());
       this.calculateTotalAmountCents(this.state);
+      this.state.setTippable(false);
     }
+    // 4. MARK the transaction completed though we could do more activity here
+    this.state.setTransactionCompleted(true);
   }
 
   private void calculateTotalAmountCents(PaymentState state) {

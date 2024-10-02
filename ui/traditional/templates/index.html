@@ -6,7 +6,7 @@
         // shutup module
         var exports = {}
         const init = () => {
-            document.querySelector('#remote-id').value = humanId({separator: '-', capitalize: false, maxLength: 7})
+            document.querySelector('#remote-id').value = humanId({separator: '-', capitalize: false, maxLength: 100})
         }
         document.addEventListener("DOMContentLoaded", init);
 
@@ -22,9 +22,9 @@
 {% endblock main %}
 
 {% block leftcol %}
-<ul>
-    <li>Navigation here</li>
-</ul>
+<!--<ul>-->
+<!--    <li>Navigation here</li>-->
+<!--</ul>-->
 {% endblock leftcol %}
 
 

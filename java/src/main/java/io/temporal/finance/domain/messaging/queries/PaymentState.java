@@ -8,6 +8,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PaymentState {
+
+  private boolean isTippable;
+  private int tipAmountCents;
+  MakePaymentRequest request;
+  List<PaymentDescriptor> descriptors = new ArrayList<>();
+  boolean isValid = false;
+  private boolean isTransactionCompleted;
+  private String failure;
+
+  public PaymentState() {}
+
+  public PaymentState(MakePaymentRequest request) {
+    this.request = request;
+    this.descriptors = Arrays.asList(request.descriptors());
+    this.tipAmountCents = request.tipAmountCents();
+    this.isValid = true;
+  }
+
   public int getTipAmountCents() {
     return tipAmountCents;
   }
@@ -15,12 +33,6 @@ public class PaymentState {
   public void setTipAmountCents(int tipAmountCents) {
     this.tipAmountCents = tipAmountCents;
   }
-
-  private boolean isTippable;
-  private int tipAmountCents;
-  MakePaymentRequest request;
-  List<PaymentDescriptor> descriptors = new ArrayList<>();
-  boolean isValid = false;
 
   public int getTotalAmountCents() {
     return totalAmountCents;
@@ -41,15 +53,6 @@ public class PaymentState {
   }
 
   CreateTransactionResponse transaction;
-
-  public PaymentState() {}
-
-  public PaymentState(MakePaymentRequest request) {
-    this.request = request;
-    this.descriptors = Arrays.asList(request.descriptors());
-    this.tipAmountCents = request.tipAmountCents();
-    this.isValid = true;
-  }
 
   public List<PaymentDescriptor> getDescriptors() {
     return descriptors;
@@ -85,5 +88,21 @@ public class PaymentState {
 
   public void setTippable(boolean tippable) {
     isTippable = tippable;
+  }
+
+  public void setTransactionCompleted(boolean completed) {
+    this.isTransactionCompleted = true;
+  }
+
+  public boolean isTransactionCompleted() {
+    return isTransactionCompleted;
+  }
+
+  public String getFailure() {
+    return failure;
+  }
+
+  public void setFailure(String failure) {
+    this.failure = failure;
   }
 }

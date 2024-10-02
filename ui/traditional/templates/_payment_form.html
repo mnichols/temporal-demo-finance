@@ -11,7 +11,7 @@
                 class="select select-bordered"
                 required
         >
-            <option disabled selected value>Select Account Type</option>
+            <option disabled selected value>Select Merchant</option>
             {% for merchant in form.merchants %}
             <option value='{{merchant.id}}'>{{merchant.label}}</option>
             {% endfor %}
@@ -61,50 +61,33 @@
     {% endfor %}
 
 <!--    <div class='flex-auto form-control'>-->
-<!--        <label-->
-<!--                for="tip-type"-->
-<!--                class="label"-->
-<!--        ><span class='label-text'>To Account</span></label>-->
-<!--        <select-->
-<!--                id="tip-type"-->
-<!--                name='tip_type'-->
-<!--                class="select select-bordered"-->
-<!--                required-->
-<!--        >-->
-<!--            <option disabled selected value>Select Recipient</option>-->
-<!--            {% for rec in form.eligible_recipients %}-->
-<!--            <option value='{{rec.id}}'>{{rec.label}}</option>-->
-<!--            {% endfor %}-->
-<!--        </select>-->
-<!--    </div>-->
-    <div class='flex-auto form-control'>
-        <label for="tip-amount" class="label w-full max-w-xs">
-            <span class='label-text'>Tip Amount</span>
-        </label>
-        <div class='input input-bordered flex items-center gap-2'>
-            <span>$</span>
-            <input
-                    id="tip-amount"
-                    type="number"
-                    name='tip_amount'
-                    class="w-full max-x-xs"
-                    required/>
-        </div>
+<!--        <label for="tip-amount" class="label w-full max-w-xs">-->
+<!--            <span class='label-text'>Tip Amount</span>-->
+<!--        </label>-->
+<!--        <div class='input input-bordered flex items-center gap-2'>-->
+<!--            <span>$</span>-->
+<!--            <input-->
+<!--                    id="tip-amount"-->
+<!--                    type="number"-->
+<!--                    name='tip_amount'-->
+<!--                    class="w-full max-x-xs"-->
+<!--                    required/>-->
+<!--        </div>-->
 
-    </div>
-<!--    <div class="flex-auto form-control">-->
-<!--        <label class='label' for="scenario"><span class='label-text'>Debug: Simulate</span> </label>-->
-<!--        <select-->
-<!--                id="scenario"-->
-<!--                name='scenario'-->
-<!--                class="select select-bordered"-->
-<!--        >-->
-<!--            <option disabled selected value>Select Scenario</option>-->
-<!--            {% for sc in form.scenarios %}-->
-<!--            <option value='{{sc.id}}'>{{sc.label}}</option>-->
-<!--            {% endfor %}-->
-<!--        </select>-->
 <!--    </div>-->
+    <div class="flex-auto form-control">
+        <label class='label' for="scenario"><span class='label-text'>Simulate Scenarios</span> </label>
+        <select
+                id="scenario"
+                name='scenario'
+                class="select select-bordered"
+        >
+            <option disabled selected value>Select Scenario</option>
+            {% for sc in form.scenarios %}
+            <option value='{{sc.id}}'>{{sc.label}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
 <!--    <div class="flex-auto form-control">-->
 <!--        <h4 class='italic'>Schedule a recurring transfer</h4>-->
@@ -135,5 +118,5 @@
 <!--        </div>-->
 <!--    </div>-->
 
-    <button type='submit' class='btn btn-primary'>Transfer</button>
+    <button type='submit' class='btn btn-primary'>Submit</button>
 </form>
