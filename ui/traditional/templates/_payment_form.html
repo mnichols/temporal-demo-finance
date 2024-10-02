@@ -1,0 +1,139 @@
+<form action='/payments' method='post' class="flex flex-col items-stretch sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
+    <input type='hidden' name='_METHOD' value='PUT'/>
+    <header class='text-2xl flex-auto w-full flex items-center'>
+        <h3 class='text-center w-full'>Make Payment</h3>
+    </header>
+    <div class='flex-auto form-control w-full'>
+        <label for="merchant-id" class="label"><span class='label-text'>Merchant</span></label>
+        <select
+                id="merchant-id"
+                name='merchant_id'
+                class="select select-bordered"
+                required
+        >
+            <option disabled selected value>Select Account Type</option>
+            {% for merchant in form.merchants %}
+            <option value='{{merchant.id}}'>{{merchant.label}}</option>
+            {% endfor %}
+        </select>
+    </div>
+<!--    <div class='flex-auto form-control w-full'>-->
+<!--        <label for="invoice-id" class="label"><span class='label-text'>Invoice</span></label>-->
+<!--        <select-->
+<!--                id="invoice-id"-->
+<!--                name='invoice_id'-->
+<!--                class="select select-bordered"-->
+<!--                required-->
+<!--        >-->
+<!--            <option disabled selected value>Select Account Type</option>-->
+<!--            {% for invoice in form.invoices %}-->
+<!--            <option value='{{invoice.id}}'>{{invoice.label}}</option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+<!--    </div>-->
+
+    <div class='flex-auto form-control'>
+        <label for="remote-id" class="label w-full">
+            <span class='label-text'>Remote ID</span>
+        </label>
+        <input
+                id="remote-id"
+                name='remote_id'
+                class="input input-bordered w-full max-x-xs"
+                placeholder='[optional]'/>
+    </div>
+
+    {% for type in form.payment_types %}
+    <div class='flex-auto form-control'>
+        <label for="amount_{{type.id}}" class="label w-full max-w-xs">
+            <span class='label-text'>{{ type.label }} Amount</span>
+        </label>
+        <div class='input input-bordered flex items-center gap-2'>
+            <span>$</span>
+            <input
+                    id="amount_{{type.id}}"
+                    type="number"
+                    name='{{type.id}}_amount'
+                    class="w-full max-x-xs"
+                    required/>
+        </div>
+    </div>
+    {% endfor %}
+
+<!--    <div class='flex-auto form-control'>-->
+<!--        <label-->
+<!--                for="tip-type"-->
+<!--                class="label"-->
+<!--        ><span class='label-text'>To Account</span></label>-->
+<!--        <select-->
+<!--                id="tip-type"-->
+<!--                name='tip_type'-->
+<!--                class="select select-bordered"-->
+<!--                required-->
+<!--        >-->
+<!--            <option disabled selected value>Select Recipient</option>-->
+<!--            {% for rec in form.eligible_recipients %}-->
+<!--            <option value='{{rec.id}}'>{{rec.label}}</option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+<!--    </div>-->
+    <div class='flex-auto form-control'>
+        <label for="tip-amount" class="label w-full max-w-xs">
+            <span class='label-text'>Tip Amount</span>
+        </label>
+        <div class='input input-bordered flex items-center gap-2'>
+            <span>$</span>
+            <input
+                    id="tip-amount"
+                    type="number"
+                    name='tip_amount'
+                    class="w-full max-x-xs"
+                    required/>
+        </div>
+
+    </div>
+<!--    <div class="flex-auto form-control">-->
+<!--        <label class='label' for="scenario"><span class='label-text'>Debug: Simulate</span> </label>-->
+<!--        <select-->
+<!--                id="scenario"-->
+<!--                name='scenario'-->
+<!--                class="select select-bordered"-->
+<!--        >-->
+<!--            <option disabled selected value>Select Scenario</option>-->
+<!--            {% for sc in form.scenarios %}-->
+<!--            <option value='{{sc.id}}'>{{sc.label}}</option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+<!--    </div>-->
+
+<!--    <div class="flex-auto form-control">-->
+<!--        <h4 class='italic'>Schedule a recurring transfer</h4>-->
+<!--        <div class='flex align-middle items-center'>-->
+<!--            <label for="schedule-interval" class="label w-16 max-w-xs">-->
+<!--                <span class='label-text'>Every</span>-->
+<!--            </label>-->
+<!--            <input-->
+<!--                    class='input input-bordered w-12'-->
+<!--                    id="schedule-interval"-->
+<!--                    type="number"-->
+<!--                    name='schedule_interval'-->
+<!--                    value='0'/>-->
+<!--            <span class='p-4'>seconds</span>-->
+<!--        </div>-->
+<!--        <div class='flex align-middle items-center'>-->
+<!--            <label for="schedule-count" class="label w-16 max-w-xs">-->
+<!--                <span class='label-text'>Up to</span>-->
+<!--            </label>-->
+<!--            <input-->
+<!--                    id="schedule-count"-->
+<!--                    type="number"-->
+<!--                    name='schedule_count'-->
+<!--                    class="input input-bordered w-12"-->
+<!--                    value='0'/>-->
+<!--            <span class='p-4'>times</span>-->
+
+<!--        </div>-->
+<!--    </div>-->
+
+    <button type='submit' class='btn btn-primary'>Transfer</button>
+</form>

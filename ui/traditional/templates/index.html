@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block header %}
+    {% include '_header.html' %}
+    <script type='application/javascript'>
+        // shutup module
+        var exports = {}
+        const init = () => {
+            document.querySelector('#id').value = humanId({separator: '-', capitalize: false, maxLength: 7})
+        }
+        document.addEventListener("DOMContentLoaded", init);
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/human-id@4.1.1/dist/index.min.js"></script>
+{% endblock header %}
+
+{% block main %}
+<main class='h-full w-full flex flex-col items-center'>
+    {% include '_payment_form.html' %}
+</main>
+
+{% endblock main %}
+
+{% block leftcol %}
+<ul>
+    <li>Navigation here</li>
+</ul>
+{% endblock leftcol %}
+
+{% block rightcol %}
+<div>
+    <p>Here is a sexy component</p>
+</div>
+{% endblock rightcol %}
+
+{% block footer %}
+<footer>
+    <div>Here is a footer</div>
+</footer>
+{% endblock footer %}

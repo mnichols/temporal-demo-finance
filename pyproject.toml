@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "temporal-demo-finance"
+version = "0.1.0"
+description = ""
+authors = ["Mike Nichols <mike.nichols@temporal.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+temporalio = "^1.7.1"
+python-dotenv = "^1.0.1"
+quart = "^0.19.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,25 +1,86 @@
 plugins {
     id 'java'
+
+    id "org.springframework.boot" version "${springBootPluginVersion}"
+    id 'org.cadixdev.licenser' version '0.6.1'
+    id 'com.diffplug.spotless' version '6.22.0'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
-group = 'io.temporal'
+group = 'io.temporal.finance'
 version = '1.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+//subprojects {
+//    apply plugin: 'java'
+//    apply plugin: 'org.cadixdev.licenser'
+//    apply plugin: 'com.diffplug.spotless'
+//    apply plugin: 'org.springframework.boot'
+//    apply plugin: 'io.spring.dependency-management'
+//
+//
+//}
+compileJava {
+    options.compilerArgs << "-Werror"
+}
+
+ext {
+    javaSDKVersion = '1.25.2'
+    jarVersion = '1.0.0'
+}
+
 repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation 'org.springframework.boot:spring-boot-starter-graphql'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework:spring-webflux'
-    testImplementation 'org.springframework.graphql:spring-graphql-test'
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+
+    implementation "io.temporal:temporal-spring-boot-starter:${javaSDKVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+
+    runtimeOnly "io.micrometer:micrometer-registry-prometheus"
+
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.mockito:mockito-core:5.11.0"
+
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 
 }
 
-test {
+license {
+    header rootProject.file('LICENSE')
+    include '**/*.java'
+    exclude '**/*.json'
+    exclude '**/*.yaml'
+    exclude '**/*.yml'
+    exclude '**/*.html'
+    exclude '**/*.js'
+}
+
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        targetExclude '**/.idea/**'
+        googleJavaFormat('1.16.0')
+    }
+}
+
+compileJava.dependsOn 'spotlessApply'
+
+tasks.named('test') {
     useJUnitPlatform()
 }
