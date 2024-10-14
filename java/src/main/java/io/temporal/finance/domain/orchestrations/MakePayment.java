@@ -8,6 +8,14 @@ import io.temporal.workflow.*;
 
 @WorkflowInterface
 public interface MakePayment {
+  /*
+   1. Validate the payment methods
+   2. Create the transaction with my processor gateway
+   3. Record the transaction with my Merchants service.
+   3a. Compensate, as needed
+   4. Allow time for a tip to arrive (optional)
+   5. Mark transaction as completed
+  */
   @WorkflowMethod
   void execute(MakePaymentRequest params);
 

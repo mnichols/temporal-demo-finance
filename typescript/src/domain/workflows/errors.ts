@@ -1,1 +1,0 @@
-export const ERR_ISSUER_SERVICE_FAILURE = 'issuer_service_failure'

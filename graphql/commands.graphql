@@ -1,6 +1,0 @@
-input ValidateRequest {
-    value: String!
-}
-type ValidateResponse {
-    value: String!
-}

@@ -48,6 +48,14 @@ public class MakePaymentImpl implements MakePayment {
                 .build());
   }
 
+  /*
+   1. Validate the payment methods
+   2. Create the transaction with my processor gateway
+   3. Record the transaction with my Merchants service.
+   3a. Compensate, as needed
+   4. Allow time for a tip to arrive (optional)
+   5. Mark transaction as completed
+  */
   @Override
   public void execute(MakePaymentRequest params) {
     // first lets initialize the state of our payment (entity pattern)
@@ -84,6 +92,7 @@ public class MakePaymentImpl implements MakePayment {
               new CreateTransactionRequest(
                   params.merchantId(), params.remoteId(), this.state.getTotalAmountCents()));
       this.state.setTransaction(trx);
+      // this  rule could come from anywhere
       this.state.setTippable(this.state.getRemoteId().toLowerCase().contains("tippable"));
       this.merchants.recordTransaction(
           new RecordTransactionRequest(
