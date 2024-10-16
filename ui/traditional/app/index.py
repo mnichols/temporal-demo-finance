@@ -102,7 +102,9 @@ async def transfers():
     descriptors = []
     for t in PAYMENT_TYPES:
         tid = t.get('id')
-        descriptors.append(PaymentDescriptor(tid, int(data.get(f'{tid}_amount'), 0)))
+        # we receive a rounded dollar amount so multiply by 100 before sending for cents conversion
+        amt = int(data.get(f'{tid}_amount'), 0) * 100
+        descriptors.append(PaymentDescriptor(tid, amt))
 
 
     print(f'received descriptors: {descriptors}')

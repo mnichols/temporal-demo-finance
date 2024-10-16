@@ -17,11 +17,12 @@
                 let totalAmountCents = document.querySelector('.total-amount-cents')
                 let transactionStatus = document.querySelector('.transaction-status')
                 let transactionId = document.querySelector('.transaction-id')
+                let tipForm = document.querySelector('.tip-form')
                 let tipButton = document.querySelector('.tip-form button')
                 let failure = document.querySelector('.failure')
                 let alertError = document.querySelector('.alert-error')
 
-                totalAmountCents.innerHTML = `$${data.totalAmountCents}`
+                totalAmountCents.innerHTML = `$${parseInt(data.totalAmountCents, 10)/100}`
                 if(data.isTransactionCompleted) {
                     transactionStatus.innerHTML = `completed`
                     transactionStatus.classList.add('badge-accent')
@@ -32,12 +33,14 @@
                     transactionStatus.classList.add('badge-error')
                 }
                 if(data.transaction && data.transaction.transactionId) {
-                    transactionId.innerHTML = `Transaction ID: ${data.transaction.transactionId}`
+                    transactionId.innerHTML = `${data.transaction.transactionId}`
                 }
                 if(data.isTippable){
-                    tipButton.removeAttribute('disabled')
+                    tipForm.removeAttribute('disabled')
+                    tipForm.classList.remove('hidden')
                 } else {
-                    tipButton.setAttribute('disabled','disabled')
+                    tipForm.setAttribute('disabled','disabled')
+                    tipForm.classList.add('hidden')
                 }
 
                 console.log('data', data)
@@ -56,25 +59,50 @@
 
 {% block main %}
 
-<div class="flex flex-col  border border-gray-200 p-4 rounded-md items-center">
-    <header class='text-2xl flex-auto w-full flex items-center max-h-4 p-4'>
-        <h2 class='text-center w-full'>
-            <span>Payment:</span>
-            <a href='{{url_for_workflow(id)}}' class='link link-primary' target='_blank'>{{id}}</a>
+<div class="flex flex-col p-4 rounded-md items-center border border-primary">
+
+    <header class='text-2xl flex-auto w-full flex'>
+        <h2 class='text-center w-full flex-auto'>
+            <span>Payment Details</span>
+
         </h2>
     </header>
-    <div class='text-2xl m-4 total-amount-cents'></div>
-    <div class="transaction-status m-4 badge badge-primary">pending</div>
+    <div class='grid grid-cols-2 gap-8 gap-y-4 m-12'>
+        <span class='text-right italic'>Location</span>
+        <a href='{{url_for_workflow(id)}}' class='link link-accent' target='_blank'>{{id}}</a>
+        <span class='text-right  italic'>Status</span>
+        <span class='transaction-status badge badge-primary'>pending</span>
+        <span class='text-right  italic'>Amount</span>
+        <span class='total-amount-cents'></span>
+        <span class='text-right  italic'>Transaction ID</span>
+        <span class='transaction-id'></span>
+    </div>
     <div role="alert" class="alert alert-error hidden">
         <span class='failure'></span>
     </div>
-    <div class='text-2xl transaction-id'></div>
+
+<!--    <div class='text-2xl m-4 total-amount-cents'></div>-->
+<!--    <div class="transaction-status m-4 badge badge-primary">pending</div>-->
+<!--    <div class='text-2xl transaction-id'></div>-->
 
     <!--    <div class='flex-auto'>-->
 <!--        <div id='radial-progress' class="radial-progress" style="&#45;&#45;value:0;" role="progressbar">0%</div>-->
 <!--        <progress id='progress' class="progress progress-primary w-56" value="0" max="100"></progress>-->
 <!--    </div>-->
-    <form action='/tips/{{id}}' method='post'  class='tip-form flex-auto border border-gray-200 p-4 rounded-md">
+
+
+
+</div>
+
+{% endblock main %}
+
+{% block leftcol %}
+    {% include '_nav.html' %}
+{% endblock leftcol %}
+
+{% block rightcol %}
+<form action='/tips/{{id}}' method='post' class="tip-form hidden border border-secondary p-4 rounded-md card-normal">
+    <fieldset>
         <input type='hidden' name='_METHOD' value='PUT'/>
         <header class='text-2xl flex-auto w-full flex items-center'>
             <h3 class='text-center w-full'>Leave A Tip</h3>
@@ -93,15 +121,8 @@
                         required/>
             </div>
         </div>
-        <button disabled class='btn btn-primary'>Submit</button>
-    </form>
-
-
-</div>
-
-{% endblock main %}
-
-{% block leftcol %}
-    {% include '_nav.html' %}
-{% endblock leftcol %}
+        <button class='btn btn-primary'>Submit</button>
+    </fieldset>
+</form>
+{% endblock rightcol %}
 
