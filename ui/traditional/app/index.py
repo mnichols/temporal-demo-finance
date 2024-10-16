@@ -6,28 +6,36 @@ from typing import cast
 from dotenv import load_dotenv
 # from clients import get_clients
 from quart import Quart, render_template, g, jsonify, make_response, request, abort, stream_with_context, redirect, json
+from quart_cors import cors
 from temporalio.client import Client
 from temporalio.service import RPCError
 
 from app.clients import get_clients
 from app.config import get_config
 from app.messages import MakePaymentRequest, PaymentDescriptor, LeaveTipRequest
-from app.models import DEFAULT_WORKFLOW_TYPE, PAYMENT_TYPES
+from app.models import PAYMENT_TYPES
 from app.views import get_make_payment_form, ServerSentEvent
 
 load_dotenv()
 app = Quart(__name__, template_folder='../templates', static_folder='../static')
+app = cors(app,
+           allow_origin='*',
+           allow_headers=['X-Namespace', 'Authorization', 'Accept'],
+           #allow_credentials=True,
+           allow_methods=['GET', 'PUT', 'POST', 'PATCH','OPTIONS', 'DELETE', 'HEAD'],
+           expose_headers=['Content-Type', 'Authorization', 'X-Namespace'])
 cfg = get_config()
 
 app_info = dict({
     'name': 'Temporal Payments'
 })
 app_info = {**app_info, **cfg}
-
+app.app_info = app_info
 
 @app.before_serving
 async def startup():
     clients = await get_clients()
+
     app.clients = clients
     print('clients are available at `app.clients`')
 
